@@ -29,6 +29,7 @@ contract CommitReveal {
     function guess(bytes32 _commitment) public {
         require(block.number < guessDeadline);
         require(msg.sender != creator);
+
         commitments[msg.sender] = _commitment;
     }
 
@@ -38,6 +39,7 @@ contract CommitReveal {
         require(createCommitment(msg.sender, answer) == commitments[msg.sender]);
         require(createCommitment(creator, answer) == commitments[creator]);
         require(!isWinner(msg.sender));
+
         winners[msg.sender] = true;
         winnersCount += 1;
     }
@@ -46,9 +48,11 @@ contract CommitReveal {
         require(block.number > revealDeadline);
         require(claimed[msg.sender] == false);
         require(isWinner(msg.sender));
+
         uint256 payout = totalPrize / winnersCount;
         claimed[msg.sender] = true;
         (bool success,) = payable(msg.sender).call{ value: payout }("");
+
         require(success, "Transfer failed");
     }
 
